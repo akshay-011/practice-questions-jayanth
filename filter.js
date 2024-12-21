@@ -1,35 +1,106 @@
+const complement = function (fn) {
+  return function (...inputs) {
+    return !fn(...inputs);
+  };
+};
+
+const isBiggerThan = function (threshold) {
+  return function (string) {
+    return string.length > threshold;
+  };
+};
+
 // even numbers [1, 2, 3, 4, 5] => [2, 4]
-const filterEvenNumbers = function (numbers) { };
+const isEven = function (number) {
+  return (number & 1) === 0;
+};
+
+const filterEvenNumbers = function (numbers) {
+  return numbers.filter(isEven);
+};
 
 // words with more than 5 letters ["apple", "banana", "kiwi", "grape"] => ["banana"]
-const filterLongWords = function (words) { };
+const filterLongWords = function (words) {
+  const isStringBiggerThan5 = isBiggerThan(5);
+
+  return words.filter(isStringBiggerThan5);
+};
 
 // people older than 30 [{name: "Alice", age: 25}, {name: "Bob", age: 35}] => [{name: "Bob", age: 35}]
-const filterAdults = function (people) { };
+const compareValue = function (threshold, attribute, predicate) {
+  return function (person) {
+    return predicate(person[attribute], threshold);
+  };
+};
+
+const isGreaterThan = function (number1, number2) {
+  return number1 > number2;
+};
+
+const add = function (number1, number2) {
+  return number1 + number2;
+};
+
+const filterAdults = function (people) {
+  const isOlderThan30 = compareValue(30, "age", isGreaterThan);
+
+  return people.filter(isOlderThan30);
+};
 
 // active users [{username: "alice", active: true}, {username: "bob", active: false}] => [{username: "alice", active: true}]
-const filterActiveUsers = function (users) { };
+const isSame = function (value1, value2) {
+  return value1 === value2;
+};
+
+const filterActiveUsers = function (users) {
+  const isOnline = compareValue(true, "active", isSame);
+
+  return users.filter(isOnline);
+};
 
 // numbers greater than 10 [5, 12, 7, 18, 3] => [12, 18]
 const filterNumbersGreaterThanTen = function (numbers) { };
 
 // books with more than 200 pages [{title: "Book 1", pages: 150}, {title: "Book 2", pages: 250}] => [{title: "Book 2", pages: 250}]
-const filterLongBooks = function (books) { };
+const filterLongBooks = function (books) {
+  const hasMoreThan200Pages = compareValue(200, "pages", isGreaterThan);
+
+  return books.filter(hasMoreThan200Pages);
+};
 
 // users with incomplete profiles [{username: "alice", profileComplete: true}, {username: "bob", profileComplete: false}] => [{username: "bob", profileComplete: false}]
-const filterIncompleteProfiles = function (users) { };
+const filterIncompleteProfiles = function (users) {
+  const isProfileUncomplete = compareValue(false, "profileComplete", isSame);
+
+  return users.filter(isProfileUncomplete);
+};
 
 // students with grades above 80 [{name: "John", grade: 75}, {name: "Jane", grade: 85}] => [{name: "Jane", grade: 85}]
-const filterHighGrades = function (students) { };
+const filterHighGrades = function (students) {
+  const hasGradeAbove80 = compareValue(80, "grade", isGreaterThan);
+
+  return students.filter(hasGradeAbove80);
+};
 
 // products that are in stock [{product: "apple", inStock: true}, {product: "banana", inStock: false}] => [{product: "apple", inStock: true}]
-const filterInStockProducts = function (products) { };
+const filterInStockProducts = function (products) {
+  const isStockAvailable = compareValue(true, "inStock", isSame);
+
+  return products.filter(isStockAvailable);
+};
 
 // orders placed in the last 30 days [{orderDate: "2024-11-01"}, {orderDate: "2024-12-01"}] => [{orderDate: "2024-12-01"}]
 const filterRecentOrders = function (orders) { };
 
 // products with a price lower than the average [{name: "item1", price: 10}, {name: "item2", price: 20}, {name: "item3", price: 5}] => [{name: "item1", price: 10}, {name: "item3", price: 5}]
-const filterBelowAveragePrice = function (products) { };
+const filterBelowAveragePrice = function (products) {
+  const prices = products.map(function (product) { return product.price; });
+  const average = prices.reduce(add, 0) / prices.length;
+
+  const isPriceLowerThanAverage = compareValue(average, "price", complement(isGreaterThan));
+
+  return products.filter(isPriceLowerThanAverage);
+};
 
 // active users who posted in the last 7 days [{username: "alice", lastPostDate: "2024-12-01", active: true}, {username: "bob", lastPostDate: "2024-11-20", active: true}] => [{username: "alice", lastPostDate: "2024-12-01", active: true}]
 const filterRecentActiveUsers = function (users) { };
