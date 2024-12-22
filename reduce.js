@@ -329,7 +329,6 @@ const flattenToObject = function (pairs) {
 
 // console.log(flattenToObject([['a', 1], ['b', 2], ['c', 3]]));
 
-
 // mergeIntervals([[1,3], [2,4], [5,7]]) => [[1, 4], [5, 7]]
 const mergeIntervals = function (intervals) { };
 
