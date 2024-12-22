@@ -11,9 +11,6 @@ const isBiggerThan = function (threshold) {
 };
 
 // even numbers [1, 2, 3, 4, 5] => [2, 4]
-const isEven = function (number) {
-  return (number & 1) === 0;
-};
 
 const filterEvenNumbers = function (numbers) {
   return numbers.filter(isEven);
@@ -27,13 +24,13 @@ const filterLongWords = function (words) {
 };
 
 // people older than 30 [{name: "Alice", age: 25}, {name: "Bob", age: 35}] => [{name: "Bob", age: 35}]
-const compareValue = function (threshold, attribute, predicate) {
-  return function (person) {
-    return predicate(person[attribute], threshold);
+const compareValue = function (threshold, attribute, comparison) {
+  return function (object) {
+    return comparison(object[attribute], threshold);
   };
 };
 
-const isGreaterThan = function (number1, number2) {
+const isGreater = function (number1, number2) {
   return number1 > number2;
 };
 
@@ -42,7 +39,7 @@ const add = function (number1, number2) {
 };
 
 const filterAdults = function (people) {
-  const isOlderThan30 = compareValue(30, "age", isGreaterThan);
+  const isOlderThan30 = compareValue(30, "age", isGreater);
 
   return people.filter(isOlderThan30);
 };
@@ -63,7 +60,7 @@ const filterNumbersGreaterThanTen = function (numbers) { };
 
 // books with more than 200 pages [{title: "Book 1", pages: 150}, {title: "Book 2", pages: 250}] => [{title: "Book 2", pages: 250}]
 const filterLongBooks = function (books) {
-  const hasMoreThan200Pages = compareValue(200, "pages", isGreaterThan);
+  const hasMoreThan200Pages = compareValue(200, "pages", isGreater);
 
   return books.filter(hasMoreThan200Pages);
 };
@@ -77,7 +74,7 @@ const filterIncompleteProfiles = function (users) {
 
 // students with grades above 80 [{name: "John", grade: 75}, {name: "Jane", grade: 85}] => [{name: "Jane", grade: 85}]
 const filterHighGrades = function (students) {
-  const hasGradeAbove80 = compareValue(80, "grade", isGreaterThan);
+  const hasGradeAbove80 = compareValue(80, "grade", isGreater);
 
   return students.filter(hasGradeAbove80);
 };
@@ -92,30 +89,47 @@ const filterInStockProducts = function (products) {
 // orders placed in the last 30 days [{orderDate: "2024-11-01"}, {orderDate: "2024-12-01"}] => [{orderDate: "2024-12-01"}]
 const filterRecentOrders = function (orders) { };
 
+const calculateAverage = function (data, attribute) {
+  const neededData = data.map(function (item) { return item[attribute]; });
+  return neededData.reduce(add, 0) / neededData.length;
+};
+
 // products with a price lower than the average [{name: "item1", price: 10}, {name: "item2", price: 20}, {name: "item3", price: 5}] => [{name: "item1", price: 10}, {name: "item3", price: 5}]
 const filterBelowAveragePrice = function (products) {
-  const prices = products.map(function (product) { return product.price; });
-  const average = prices.reduce(add, 0) / prices.length;
-
-  const isPriceLowerThanAverage = compareValue(average, "price", complement(isGreaterThan));
+  const average = calculateAverage(products, 'price');
+  const isPriceLowerThanAverage = compareValue(average, "price", complement(isGreater));
 
   return products.filter(isPriceLowerThanAverage);
 };
 
-// active users who posted in the last 7 days [{username: "alice", lastPostDate: "2024-12-01", active: true}, {username: "bob", lastPostDate: "2024-11-20", active: true}] => [{username: "alice", lastPostDate: "2024-12-01", active: true}]
-const filterRecentActiveUsers = function (users) { };
-
 // students who passed all subjects [{name: "John", subjects: [{name: "Math", passed: true}, {name: "Science", passed: true}]}, {name: "Jane", subjects: [{name: "Math", passed: false}, {name: "Science", passed: true}]}] => [{name: "John", subjects: [{name: "Math", passed: true}, {name: "Science", passed: true}]}]
-const filterStudentsWithAllSubjectsPassed = function (students) { };
+const filterStudentsWithAllSubjectsPassed = function (students) {
+  const isPassed = compareValue(true, "passed", isSame);
 
-// people whose birthday is this month [{name: "Alice", birthDate: "2024-12-01"}, {name: "Bob", birthDate: "2024-11-01"}] => [{name: "Alice", birthDate: "2024-12-01"}]
-const filterBirthdaysThisMonth = function (people) { };
+  return students.filter(function (student) {
+    return student['subjects'].every(isPassed);
+  });
+};
+
+// console.log(filterStudentsWithAllSubjectsPassed([{ name: "John", subjects: [{ name: "Math", passed: true }, { name: "Science", passed: true }] }, { name: "Jane", subjects: [{ name: "Math", passed: false }, { name: "Science", passed: true }] }]));
 
 // orders that exceed the average order value [{orderId: 1, amount: 20}, {orderId: 2, amount: 50}, {orderId: 3, amount: 10}] => [{orderId: 2, amount: 50}]
-const filterHighValueOrders = function (orders) { };
+const filterHighValueOrders = function (orders) {
+  const average = calculateAverage(orders, 'amount');
+  const isGreaterThanAverage = compareValue(average, "amount", isGreater);
+
+  return orders.filter(isGreaterThanAverage);
+};
 
 // books with reviews higher than the average rating [{title: "Book 1", rating: 4}, {title: "Book 2", rating: 5}, {title: "Book 3", rating: 3}] => [{title: "Book 2", rating: 5}]
-const filterTopRatedBooks = function (books) { };
+const filterTopRatedBooks = function (books) {
+  const average = calculateAverage(books, 'rating');
+  const isRateGreaterThanAverage = compareValue(average, "rating", isGreater);
+
+  return books.filter(isRateGreaterThanAverage);
+};
+
+// console.log(filterTopRatedBooks([{ title: "Book 1", rating: 4 }, { title: "Book 2", rating: 5 }, { title: "Book 3", rating: 3 }]));
 
 // employees whose salary is higher than the department average [{name: "Alice", salary: 5000, department: "HR"}, {name: "Bob", salary: 7000, department: "HR"}, {name: "Charlie", salary: 4000, department: "IT"}] => [{name: "Bob", salary: 7000, department: "HR"}]
 const filterHighSalaryEmployees = function (employees) { };
@@ -137,9 +151,6 @@ const filterByPrice = function (products, price) { };
 
 // filter students who scored above a certain grade in Math [{name: "John", grades: {math: 80, science: 90}}, {name: "Jane", grades: {math: 70, science: 85}}] => [{name: "John", grades: {math: 80, science: 90}}]
 const filterByMathGrade = function (students, grade) { };
-
-// filter events that occur before a certain date [{name: "Event1", date: "2024-12-01"}, {name: "Event2", date: "2024-11-15"}] => [{name: "Event2", date: "2024-11-15"}]
-const filterByDate = function (events, date) { };
 
 // filter employees who earn more than a certain salary [{name: "Alice", salary: 5000}, {name: "Bob", salary: 7000}] => [{name: "Bob", salary: 7000}]
 const filterBySalary = function (employees, salary) { };
@@ -179,9 +190,6 @@ const filterLongNames = function (people, minLength) { };
 
 // Normalize scores to a standard range, then filter for students who passed [{name: "John", score: 50}, {name: "Jane", score: 80}] => [{name: "Jane", score: 80}]
 const filterNormalizedScores = function (students, minScore) { };
-
-// Convert book publication dates, then filter for books published after a given year [{title: "Book1", year: 2020}, {title: "Book2", year: 2022}] => [{title: "Book2", year: 2022}]
-const filterRecentBooks = function (books, yearThreshold) { };
 
 // Count the number of posts for each user, then filter for users with more than a specific number of posts [{username: "Alice", posts: 100}, {username: "Bob", posts: 50}] => [{username: "Alice", posts: 100}]
 const filterActivePosters = function (users, postThreshold) { };
@@ -259,7 +267,7 @@ const filterStudentsByGrade = function (students, minGrade) { };
 const filterBooksByAward = function (books, award) { };
 
 // Filter users where at least one post has more than a specific number of likes [{user: {name: "John", posts: [{title: "Post 1", likes: 150}, {title: "Post 2", likes: 20}]}}] => [{user: {name: "John", posts: [{title: "Post 1", likes: 150}, {title: "Post 2", likes: 20}]}}]
-const filterUsersByPostLikes = function (users, minLikes) { };
+const filterUsersByPostLike = function (users, minLikes) { };
 
 // Filter cities where at least one attraction is in a specific category [{city: {name: "Paris", attractions: [{name: "Eiffel Tower", category: "landmark"}, {name: "Louvre", category: "museum"}]}}] => [{city: {name: "Paris", attractions: [{name: "Eiffel Tower", category: "landmark"}, {name: "Louvre", category: "museum"}]}}]
 const filterCitiesByAttractionCategory = function (cities, category) { };
@@ -286,7 +294,7 @@ const filterUsersByPostComments = function (users, minComments) { };
 const filterUsersByPostCategory = function (users, category) { };
 
 // Filter users who have a certain number of followers and have posted in the last 30 days [{user: {name: "Tom", followers: 1000, lastPostDate: "2024-11-10"}}] => [{user: {name: "Tom", followers: 1000, lastPostDate: "2024-11-10"}}]
-const filterActiveUsers = function (users, minFollowers, daysAgo) { };
+const filterActiveUser = function (users, minFollowers, daysAgo) { };
 
 // Filter posts that have at least one hashtag from a list of trending hashtags [{post: {title: "Post 1", hashtags: ["#food", "#vegan"]}}] => [{post: {title: "Post 1", hashtags: ["#food", "#vegan"]}}]
 const filterPostsByHashtags = function (posts, trendingHashtags) { };

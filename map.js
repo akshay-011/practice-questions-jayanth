@@ -192,10 +192,6 @@ const flattenAndFilterEven = function (arrays) { };
 // Steps: Filter for age > 18, then sort by name.
 const filterAdultsAndSort = function (arrays) { };
 
-// given an array of objects representing sales with date and amount, calculate the total sales for each month and return them as an array of arrays like [[month, total], ...] in [{ date: "2024-01-15", amount: 100 }, { date: "2024-02-10", amount: 150 }, { date: "2024-01-25", amount: 200 }] => [["2024-01", 300], ["2024-02", 150]]
-// Steps: Group by month, sum the sales for each month.
-const totalSalesByMonth = function (sales) { };
-
 // map each employee's department to their total salary, and then return an array of objects with department name and total salary in [{ name: "Alice", department: "HR", salary: 5000 }, { name: "Bob", department: "Engineering", salary: 6000 }, { name: "Charlie", department: "HR", salary: 4500 }] => [{ department: "HR", totalSalary: 9500 }, { department: "Engineering", totalSalary: 6000 }]
 // Steps: Group by department, sum the salaries for each department.
 const totalSalaryByDepartment = function (employees) { };
@@ -207,10 +203,6 @@ const highestGradeByStudent = function (students) { };
 // for a list of books with authors and publication years, return an array of objects that categorizes books into "old" (published before 2000) and "new" (published after 2000) in [{ title: "Book1", author: "Author1", year: 1999 }, { title: "Book2", author: "Author2", year: 2005 }] => [{ category: "old", books: [{ title: "Book1", author: "Author1" }] }, { category: "new", books: [{ title: "Book2", author: "Author2" }] }]
 // Steps: Categorize by year, group books accordingly.
 const categorizeBooksByYear = function (books) { };
-
-// for a list of transactions, return an array of objects where each object contains the user's name and the total amount they spent, grouping by user name in [{ user: "Alice", transaction: { amount: 50, date: "2024-01-01" } }, { user: "Bob", transaction: { amount: 30, date: "2024-01-02" } }, { user: "Alice", transaction: { amount: 20, date: "2024-01-03" } }] => [{ user: "Alice", totalSpent: 70 }, { user: "Bob", totalSpent: 30 }]
-// Steps: Group by user, sum the transaction amounts for each user.
-const totalSpentByUser = function (transactions) { };
 
 // given an array of products, each with name, price, and discount, return a list of objects containing the product name and final price (after applying the discount), rounding the final price to two decimal places in [{ name: "Product1", price: 100, discount: 0.1 }, { name: "Product2", price: 150, discount: 0.2 }] => [{ name: "Product1", finalPrice: 90.00 }, { name: "Product2", finalPrice: 120.00 }]
 // Steps: Apply discount, calculate final price, round to two decimal places.
